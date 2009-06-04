@@ -67,6 +67,8 @@ class VideoScraper:
       for match in matches:
         primary_link = match.find('a', 'vodlink')
         id = primary_link['href'].replace('./', '')
+        if id.startswith('javascript'):
+          break
         re_match = re.search(r'Posted: (\d+) (\d+)/(\d+)<', match.parent.find('td', 'sect').renderContents())
         year = re_match.group(1)
         month = re_match.group(2)
