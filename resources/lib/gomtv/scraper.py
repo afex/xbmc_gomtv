@@ -68,7 +68,7 @@ class VideoScraper:
         primary_link = match.find('a', 'vodlink')
         id = primary_link['href'].replace('./', '')
         if id.startswith('javascript'):
-          break
+          continue
         re_match = re.search(r'Posted: (\d+) (\d+)/(\d+)<', match.parent.find('td', 'sect').renderContents())
         year = re_match.group(1)
         month = re_match.group(2)
@@ -158,10 +158,21 @@ class VideoScraper:
     return vid
     
   def download_video(self, video, callback_func):
-    if not os.path.exists(video['local_vid_path']):
-      if callback_func:
-        urllib.urlretrieve(video['file_url'], video['local_vid_path'], callback_func)
-      else:
-        urllib.urlretrieve(video['file_url'], video['local_vid_path'])
+    try:
+      if not os.path.exists(video['local_vid_path']):
+        if callback_func:
+          urllib.urlretrieve(video['file_url'], video['local_vid_path'], callback_func)
+        else:
+          urllib.urlretrieve(video['file_url'], video['local_vid_path'])
+    except Exception, e:
+      urllib.urlcleanup()
+      remove_tries = 3
+      while remove_tries and os.path.isfile(video['local_vid_path']):
+        try:
+          os.remove(video['local_vid_path'])
+        except:
+          remove_tries -= 1
+          xbmc.sleep( 1000 )
+      raise e
       
     return True
