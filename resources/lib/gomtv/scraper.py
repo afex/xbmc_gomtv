@@ -96,11 +96,11 @@ class VideoScraper:
     for id in videos:
       # Effort vs Mind- Game 3 [Ro.32 Group 11]
       # Violet vs Practice - Game3 [Ro.32 Group 10] 
-      re_match = re.match(r'(.*) +(vs|VS) +([^-]*)[ -]+ (G|g)ame ?(\d+) +\[(.*)\]', videos[id]['title'])
+      re_match = re.match(r'(.*) +(vs) +([^ \[-]*)[ -]+Game ?(\d+) +\[(.*)\]', videos[id]['title'], re.I)
       if re_match:
-        match_name = re_match.group(1) + ' vs ' + re_match.group(3) + ' [' + re_match.group(6) + ']'
+        match_name = re_match.group(1) + ' vs ' + re_match.group(3) + ' [' + re_match.group(5) + ']'
         match_id = md5.new(match_name).hexdigest()
-        game_num = int(re_match.group(5))
+        game_num = int(re_match.group(4))
       else:
         match_id = md5.new(videos[id]['title']).hexdigest()
         match_name = videos[id]['title']
