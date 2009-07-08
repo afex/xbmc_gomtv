@@ -18,17 +18,21 @@ class CategoryScraper:
     contents = response.read()
     page = BeautifulSoup(contents)
     
-    channels = page.findAll('div', {'id': 'Channels1'})
+    channels = page.findAll('div', {'id': 'Channels'})
     if channels:
       for channel in channels:        
         shows = channel.findAll('dl')
         for show in shows:
-          id = re.sub(r'http://www\.gomtv\.net/(.*)/', r'\1', show.dt.a['href'])
-          image_url = show.find('dd', 'img').img['src']
-          if image_url.startswith('/'):
-            image_url = 'http://www.gomtv.net' + image_url
-          description = show.find('dd', 'txt').renderContents()
-          cats[id] = {'id': id, 'title': show.dt.a.string, 'description': description, 'image_url': image_url }
+          if show.dt.a:
+            id = re.sub(r'/(.*)/', r'\1', show.dt.a['href'])
+            image_url = show.find('dd', 'img').img['src']
+            if image_url.startswith('/'):
+              image_url = 'http://www.gomtv.net' + image_url
+            if show.find('dd', 'txt'):
+              description = show.find('dd', 'txt').renderContents()
+            else:
+              description = ''
+            cats[id] = {'id': id, 'title': show.dt.a.string, 'description': description, 'image_url': image_url }
 
     return cats
     
